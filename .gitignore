@@ -1,1 +1,7 @@
 venv/
+# Ignorar arquivos de cache
+node_modules/.cache/
+
+# Outros arquivos ou pastas a serem ignorados
+*.log
+*.tmp
