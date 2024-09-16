@@ -1,4 +1,25 @@
 <template>
+  <div id="app">
+    <PainelMonitoramento />
+  </div>
+</template>
+
+<script>
+import PainelMonitoramento from './components/PainelMonitoramento.vue';
+
+export default {
+  name: 'App',
+  components: {
+    PainelMonitoramento
+  }
+};
+</script>
+
+<style>
+/* estilos globais se necessário */
+</style>
+
+<template>
   <div class="container">
     <div class="panel-monitoring">
       <h1>Painel de Monitoramento</h1>
