@@ -1,12 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, flash
 import requests
 from bs4 import BeautifulSoup
 import urllib3
+import sqlite3
+import re
 
 # Suprimindo os avisos de HTTPS não verificados
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
+
+def conectar_db():
+    conectar = squite3.connect('clientes.db')
+    return conectar
 
 def check_links(links):
     results = []
