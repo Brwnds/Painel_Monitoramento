@@ -1,70 +1,18 @@
 <template>
-  <div id="app">
-    <PainelMonitoramento />
-  </div>
-</template>
-
-<script>
-import PainelMonitoramento from './components/PainelMonitoramento.vue';
-
-export default {
-  name: 'App',
-  components: {
-    PainelMonitoramento
-  }
-};
-</script>
-
-<style>
-/* estilos globais se necessário */
-</style>
-
-<template>
   <div class="container">
     <div class="panel-monitoring">
       <h1>Painel de Monitoramento</h1>
       <div class="grid">
-        <div class="card">
-          Indicadores do Orçamento
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card offline">
-          Acompanhamento Orçamentário (PNAE)
-          <div class="circle red">✖</div>
-        </div>
-        <div class="card">
-          Acompanhamento Orçamentário (PPA)
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          PNAE 2022-2031 Dimensão Setorial
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Acordos Internacionais
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Cursos de Capacitação na Área Aeroespacial
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Registro de Objetos Espaciais Brasileiros
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Painel de Mapeamento de Tecnologias Espaciais
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Dados e Indicadores
-          <div class="circle blue">✔</div>
+        <div v-for="panel in panels" :key="panel.link" class="card" :class="{ offline: panel.status === 'inactive' }">
+          {{ panel.name }}
+          <div class="circle" :class="{ blue: panel.status === 'active', red: panel.status === 'inactive' }">
+            {{ panel.status === 'active' ? '✔' : '✖' }}
+          </div>
         </div>
       </div>
       <div class="sidebar">
         <img src="./assets/Logo.png" alt="Logo">
-        
-        <input type="text" placeholder="Buscar...">
+        <input v-model="searchQuery" type="text" placeholder="Buscar...">
         <div class="status">
           <button class="online">
             Painéis Online
@@ -81,16 +29,76 @@ export default {
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "painel-de-monitoramento",
   data() {
     return {
-      onlinePanels: 8,
-      offlinePanels: 1
+      panels: [],  // Armazena informações sobre os painéis
+      onlinePanels: 0,
+      offlinePanels: 0,
+      searchQuery: ''
     };
+  },
+  methods: {
+    async fetchPanelData() {
+      try {
+        const response = await axios.post('http://localhost:5000/check_links', {
+          power_bi_links: [
+        "https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/indicadores-do-orcamento-1",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-ppa",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/cooperacao-internacional/acordos-internacionais",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/licenciamento-e-normatizacao/indicadores-e-dados-do-licenciamento-e-normatizacao",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-capital-humano/explorador-de-dados-de-capital-humano",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/sistemas-espaciais/satelites/registro-de-satelites-brasileiros",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-desenvolvimento-tecnologico/tema-mapeamento-tecnologico/mapeamento-de-tecnologias-espaciais",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-admissao",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-qualificacao",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-execucao",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031"
+            // Adicione mais links aqui
+          ]
+        });
+        
+        const results = response.data;
+        this.panels = results.map(result => ({
+          link: result.link,
+          name: this.getPanelName(result.link),
+          status: result.status
+        }));
+        this.updatePanelCounts();
+      } catch (error) {
+        console.error("Erro ao buscar dados dos painéis:", error);
+      }
+    },
+    getPanelName(link) {
+      const panelNames = {
+        "https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro": "Indicadores do Orçamento",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente": "Acompanhamento Orçamentário (PNAE)",
+        // Adicione mais mapeamentos de link para nomes de painéis aqui
+      };
+      return panelNames[link] || "Painel Desconhecido";
+    },
+    updatePanelCounts() {
+      this.onlinePanels = this.panels.filter(panel => panel.status === 'active').length;
+      this.offlinePanels = this.panels.filter(panel => panel.status === 'inactive').length;
+    }
+  },
+  mounted() {
+    this.fetchPanelData(); // Fetch panel data when the component is mounted
   }
 };
 </script>
+
+<style scoped>
+/* Seu estilo aqui */
+</style>
+
 
 <style scoped>
 
@@ -102,7 +110,7 @@ export default {
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3e5e9;
+  background-color: #1443a0;
 }
 
 .container {
