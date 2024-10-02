@@ -24,49 +24,11 @@ export default {
     <div class="panel-monitoring">
       <h1>Painel de Monitoramento</h1>
       <div class="grid">
-<<<<<<< Updated upstream
-        <div class="card">
-          Indicadores do Orçamento
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card offline">
-          Acompanhamento Orçamentário (PNAE)
-          <div class="circle red">✖</div>
-        </div>
-        <div class="card">
-          Acompanhamento Orçamentário (PPA)
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          PNAE 2022-2031 Dimensão Setorial
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Acordos Internacionais
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Cursos de Capacitação na Área Aeroespacial
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Registro de Objetos Espaciais Brasileiros
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Painel de Mapeamento de Tecnologias Espaciais
-          <div class="circle blue">✔</div>
-        </div>
-        <div class="card">
-          Dados e Indicadores
-          <div class="circle blue">✔</div>
-=======
         <div v-for="panel in filteredPanels" :key="panel.link" class="card" :class="{ offline: panel.status === 'inactive' }">
           <div class="panel-name">{{ panel.name }}</div>
           <div class="circle" :class="{ blue: panel.status === 'active', red: panel.status === 'inactive' }">
             {{ panel.status === 'active' ? '✔' : '✖' }}
           </div>
->>>>>>> Stashed changes
         </div>
       </div>
       <div class="sidebar">
@@ -96,11 +58,6 @@ export default {
   name: "painel-de-monitoramento",
   data() {
     return {
-<<<<<<< Updated upstream
-      onlinePanels: 8,
-      offlinePanels: 1
-    };
-=======
       panels: [],  // Armazena informações sobre os painéis
       onlinePanels: 0,
       offlinePanels: 0,
@@ -172,17 +129,12 @@ export default {
   },
   mounted() {
     this.fetchPanelData(); // Busca dados dos painéis quando o componente é montado
->>>>>>> Stashed changes
   }
 };
 </script>
 
 <style scoped>
-<<<<<<< Updated upstream
-
-=======
 /* Seu estilo aqui */
->>>>>>> Stashed changes
 * {
   margin: 0;
   padding: 0;
