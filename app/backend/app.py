@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, request, jsonify
+from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import urllib3
@@ -11,6 +12,7 @@ app_root = os.path.dirname(__file__)
 static_folder_path = os.path.join(app_root, 'frontend', 'dist')
 
 app = Flask(__name__, static_folder=static_folder_path, static_url_path='')
+CORS(app)
 
 def check_links(links):
     result = []
@@ -36,9 +38,11 @@ def check_links(links):
                     
                     result.append({"link": link, "status": "ativo", "painel": painel_name, "iframe": iframe['src']})
                     status_count["ativo"] += 1
+
                 else:
                     result.append({"link": link, "status": "inválido"})
                     status_count["inválido"] += 1
+
             else:
                 result.append({"link": link, "status": f"erro {response.status_code}"})
                 status_count["erro"] += 1
@@ -52,10 +56,8 @@ def check_links(links):
 @app.route("/")
 def index():
     try:
-        # Verifique se o caminho está correto
         print(f"Caminho para o diretório estático: {app.static_folder}")
         files = os.listdir(app.static_folder)
-        print(f"Conteúdo do diretório estático: {files}")
         if 'index.html' in files:
             return send_from_directory(app.static_folder, 'index.html')
         else:
@@ -87,5 +89,4 @@ def serve_static(filename):
         return "Arquivo não encontrado", 404
 
 if __name__ == "__main__":
-    app.run(debug=False)
-
+    app.run(debug=True)
