@@ -47,9 +47,18 @@
             "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente",
             "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/indicadores-do-orcamento-1",
             "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
-            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
             "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-ppa",
-            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/cooperacao-internacional/acordos-internacionais"
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/cooperacao-internacional/acordos-internacionais",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/licenciamento-e-normatizacao",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-capital-humano/explorador-de-dados-de-capital-humano",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/sistemas-espaciais/satelites/registro-de-satelites-brasileiros",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-desenvolvimento-tecnologico/tema-mapeamento-tecnologico/mapeamento-de-tecnologias-espaciais",
+            "https://observatorio.aeb.gov.br/prosame/carteira-de-admissao",
+            "https://observatorio.aeb.gov.br/prosame/carteira-de-qualificacao",
+            "https://observatorio.aeb.gov.br/prosame/carteira-de-execucao",
+            "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031"
           ]
         }).then(response => {
           this.panels = response.data;
