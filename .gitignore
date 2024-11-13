@@ -5,3 +5,4 @@ node_modules/.cache/
 # Outros arquivos ou pastas a serem ignorados
 *.log
 *.tmp
+app/frontend/node_modules/
