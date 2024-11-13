@@ -59,7 +59,7 @@ export default {
         "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-desenvolvimento-tecnologico/tema-mapeamento-tecnologico/mapeamento-de-tecnologias-espaciais",
         "https://observatorio.aeb.gov.br/prosame/carteira-de-admissao",
         "https://observatorio.aeb.gov.br/prosame/carteira-de-qualificacao",
-        
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-execucao",
         "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031"
             // Adicione mais links aqui
           ]
