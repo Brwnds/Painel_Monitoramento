@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <h1>Visualização de Painéis</h1>
-    <button @click="checkPanels" :disabled="loading">
-      <span v-if="!loading">Verificar Painéis</span>
+    <h1>Visualização de Painéis e Links</h1>
+    <button @click="checkLinks" :disabled="loading">
+      <span v-if="!loading">Verificar Links</span>
       <span v-else>Verificando...</span>
     </button>
     <ul>
@@ -11,6 +11,23 @@
         <span class="panel-status">{{ status }}</span>
       </li>
     </ul>
+
+    <div class="link-status">
+      <h2>Status dos Links</h2>
+      <p>Ativos: {{ statusCount.ativo }}</p>
+      <p>Inválidos: {{ statusCount.inválido }}</p>
+      <p>Erros: {{ statusCount.erro }}</p>
+      <p>Falhas: {{ statusCount.falha }}</p>
+    </div>
+
+    <div class="link-results">
+      <h3>Resultados dos Links</h3>
+      <ul>
+        <li v-for="(link, index) in links" :key="index">
+          {{ link.link }} - {{ link.status }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -18,27 +35,32 @@
 import axios from 'axios';
 
 export default {
-  name: 'PanelChecker',
+  name: 'LinkChecker',
   data() {
     return {
-      panelStatus: {},
-      loading: false
+      panelStatus: {}, // Status dos painéis
+      loading: false,
+      links: [], // Resultados dos links
+      statusCount: { ativo: 0, inválido: 0, erro: 0, falha: 0 } // Contagem dos status dos links
     };
   },
   methods: {
-    async checkPanels() {
+    async checkLinks() {
       this.loading = true;
       try {
-        const response = await axios.get('http://localhost:5000/api/check_panels');
-        this.panelStatus = response.data;
+        const response = await axios.post('http://localhost:5000/check_links', {
+          links: ["https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro", "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente"] // Adicione seus links aqui
+        });
+        this.links = response.data.result; // Armazena os resultados dos links
+        this.statusCount = response.data.status_count; // Armazena a contagem de status
       } catch (error) {
-        console.error(error);
+        console.error("Erro ao verificar links:", error);
       } finally {
         this.loading = false;
       }
     },
     statusClass(status) {
-      return status === 'active' ? 'active' : 'offline';
+      return status === 'active' ? 'active' : 'offline'; // Adicione outras classes conforme necessário
     }
   }
 }
@@ -107,5 +129,13 @@ li {
 
 .panel-status {
   font-style: italic;
+}
+
+.link-status {
+  margin-top: 30px;
+}
+
+.link-results {
+  margin-top: 20px;
 }
 </style>
