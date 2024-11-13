@@ -87,6 +87,6 @@ def serve_static(filename):
         return send_from_directory(app.static_folder, filename)
     except FileNotFoundError:
         return "Arquivo não encontrado", 404
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
