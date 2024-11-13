@@ -1,31 +1,10 @@
 <template>
-  <div id="app">
-    <PainelMonitoramento />
-  </div>
-</template>
-
-<script>
-import PainelMonitoramento from './components/PainelMonitoramento.vue';
-
-export default {
-  name: 'App',
-  components: {
-    PainelMonitoramento
-  }
-};
-</script>
-
-<style>
-/* estilos globais se necessário */
-</style>
-
-<template>
   <div class="container">
     <div class="panel-monitoring">
       <h1>Painel de Monitoramento</h1>
       <div class="grid">
-        <div v-for="panel in filteredPanels" :key="panel.link" class="card" :class="{ offline: panel.status === 'inactive' }">
-          <div class="panel-name">{{ panel.name }}</div>
+        <div v-for="panel in panels" :key="panel.link" class="card" :class="{ offline: panel.status === 'inactive' }">
+          {{ panel.name }}
           <div class="circle" :class="{ blue: panel.status === 'active', red: panel.status === 'inactive' }">
             {{ panel.status === 'active' ? '✔' : '✖' }}
           </div>
@@ -33,19 +12,15 @@ export default {
       </div>
       <div class="sidebar">
         <img src="./assets/Logo.png" alt="Logo">
-        
-        <input type="text" placeholder="Buscar...">
+        <input v-model="searchQuery" type="text" placeholder="Buscar...">
         <div class="status">
-          <button class="online" @click="filterStatus('active')">
+          <button class="online">
             Painéis Online
             <span class="status-count">{{ onlinePanels }}</span>
           </button>
-          <button class="offline" @click="filterStatus('inactive')">
-            Painéis Offline
+          <button class="offline">
+            Painéis Offlines
             <span class="status-count">{{ offlinePanels }}</span>
-          </button>
-          <button class="check-panels" @click="fetchPanelData">
-            Verificar Painéis
           </button>
         </div>
       </div>
@@ -54,6 +29,8 @@ export default {
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "painel-de-monitoramento",
   data() {
@@ -61,45 +38,33 @@ export default {
       panels: [],  // Armazena informações sobre os painéis
       onlinePanels: 0,
       offlinePanels: 0,
-      searchQuery: '',
-      statusFilter: null, // Armazenar o filtro de status
+      searchQuery: ''
     };
-  },
-  computed: {
-    filteredPanels() {
-      return this.panels
-        .filter(panel => panel.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
-        .filter(panel => !this.statusFilter || panel.status === this.statusFilter); // Aplicar o filtro de status
-    }
   },
   methods: {
     async fetchPanelData() {
       try {
         const response = await axios.post('http://localhost:5000/check_links', {
           power_bi_links: [
-          "https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/indicadores-do-orcamento-1",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-ppa",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/cooperacao-internacional/acordos-internacionais",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/licenciamento-e-normatizacao",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-capital-humano/explorador-de-dados-de-capital-humano",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/sistemas-espaciais/satelites/registro-de-satelites-brasileiros",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-desenvolvimento-tecnologico/tema-mapeamento-tecnologico/mapeamento-de-tecnologias-espaciais",
-          "https://observatorio.aeb.gov.br/prosame/carteira-de-admissao",
-          "https://observatorio.aeb.gov.br/prosame/carteira-de-qualificacao",
-          "https://observatorio.aeb.gov.br/prosame/carteira-de-execucao",
-          "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031"  
+        "https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/indicadores-do-orcamento-1",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-pnae-1",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-orcamentario-do-ppa",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/cooperacao-internacional/acordos-internacionais",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/licenciamento-e-normatizacao/indicadores-e-dados-do-licenciamento-e-normatizacao",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-capital-humano/explorador-de-dados-de-capital-humano",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/sistemas-espaciais/satelites/registro-de-satelites-brasileiros",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-desenvolvimento-tecnologico/tema-mapeamento-tecnologico/mapeamento-de-tecnologias-espaciais",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-admissao",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-qualificacao",
+        "https://observatorio.aeb.gov.br/prosame/carteira-de-execucao",
+        "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/governanca/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031/programa-nacional-de-atividades-espaciais-2013-pnae-2022-2031"
+            // Adicione mais links aqui
           ]
-        }, {
-          headers: {
-            'Content-Type': 'application/json' 
-          }
         });
-
+        
         const results = response.data;
         this.panels = results.map(result => ({
           link: result.link,
@@ -115,26 +80,28 @@ export default {
       const panelNames = {
         "https://observatorio.aeb.gov.br/politica-espacial/instituicoes-do-setor-espacial-brasileiro": "Indicadores do Orçamento",
         "https://observatorio.aeb.gov.br/dados-e-indicadores/tema-governo/tema-orcamento/acompanhamento-da-loa-vigente": "Acompanhamento Orçamentário (PNAE)",
-      
+        // Adicione mais mapeamentos de link para nomes de painéis aqui
       };
       return panelNames[link] || "Painel Desconhecido";
     },
     updatePanelCounts() {
       this.onlinePanels = this.panels.filter(panel => panel.status === 'active').length;
       this.offlinePanels = this.panels.filter(panel => panel.status === 'inactive').length;
-    },
-    filterStatus(status) {
-      this.statusFilter = status; // Atualiza o filtro de status
     }
   },
   mounted() {
-    this.fetchPanelData(); // Busca dados dos painéis quando o componente é montado
+    this.fetchPanelData(); // Fetch panel data when the component is mounted
   }
 };
 </script>
 
 <style scoped>
 /* Seu estilo aqui */
+</style>
+
+
+<style scoped>
+
 * {
   margin: 0;
   padding: 0;
@@ -143,7 +110,7 @@ export default {
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #e3e5e9;
+  background-color: #1443a0;
 }
 
 .container {
@@ -256,43 +223,96 @@ h1 {
 
 .status {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   width: 100%;
+  gap: 10px;
 }
 
 .status button {
-  background-color: #007bff;
+  padding: 15px;
   border: none;
-  color: white;
-  padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  flex: 1;
-  margin: 0 5px;
-  font-size: 14px;
+  font-weight: bold;
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+}
+
+.status .online {
+  background-color: #5cb85c;
+  color: #fff;
+}
+
+.status .offline {
+  background-color: #d9534f;
+  color: #fff;
+}
+
+.circle-status {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  line-height: 25px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
 }
 
 .status-count {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 4px 8px;
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  font-size: 12px;
-  color: #007bff;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 5px 10px;
+  border-radius: 10px;
+  color: #fff;
+  margin-left: 10px;
 }
 
-.status button:hover {
-  background-color: #0056b3;
+@media (max-width: 768px) {
+  .panel-monitoring {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar img {
+    max-width: 120px;
+  }
+
+  .status button {
+    font-size: 14px;
+  }
+
+  .status-count {
+    font-size: 18px;
+  }
 }
 
-.check-panels {
-  background-color: #5cb85c;
-}
+@media (max-width: 480px) {
+  .card {
+    font-size: 12px;
+    min-height: 100px;
+  }
 
-.check-panels:hover {
-  background-color: #4cae4c;
+  .circle {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+
+  .status button {
+    font-size: 12px;
+  }
+
+  .status-count {
+    font-size: 16px;
+  }
 }
 </style>
